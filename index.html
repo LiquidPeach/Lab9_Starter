@@ -85,23 +85,90 @@
       <button>Console Trace</button>
       <button>Trigger a Global Error</button>
     </section>
+
+    <!--
+      <p id="get-me">Never gonna give you up</p>
+    -->
+
   </main>
 
+  <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
   <script>
+    window.TrackJS && TrackJS.install({ 
+      token: "aebaf8edd03e4ee18f9d59e73b0008e6"
+      // for more configuration options, see https://docs.trackjs.com
+    });
+  </script>  
+
+  <script>
+    TrackJS.track('Testing TrackJS!');
+                        
+    class ErrorDemo extends Error {
+      constructor(message) {
+        super(message);
+        this.name = "ErrorDemo";
+      }
+    }
+
     let form = document.querySelector('form');
     form.addEventListener('submit', e => {
-      e.preventDefault();
       let output = document.querySelector('output');
       let firstNum = document.querySelector('#first-num').value;
       let secondNum = document.querySelector('#second-num').value;
       let operator = document.querySelector('#operator').value;
+      
+      e.preventDefault();
+      
+      window.addEventListener("error", (e)=>{
+        output.textContent = `${output.textContent}${e.type}: Not valid input!\n`;
+        console.log(e);
+      });
+      
       output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
     });
 
     let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
 
-    // Start your code here
-    // You may move this JS to another file if you wish
+    errorBtns.forEach(function (value, i) {
+      errorBtns[i].addEventListener('click', e => {
+        onConsole(i);
+      });
+    });
+
+    tryCatchDemo();
+
+    function onConsole(i) {
+      if (i == 0) console.log("Log Demo");
+      else if (i == 1) console.error("Error Demo");
+      else if (i == 2) console.count("Count Demo");
+      else if (i == 3) console.warn("Warning Demo");
+      else if (i == 4) {const msg = "Assert Demo"; console.assert(3 % 2 === 0, "%o", { msg });}
+      else if (i == 5) console.clear();
+      else if (i == 6) console.dir(document.location);
+      else if (i == 7) console.dirxml(errorBtns[i]);
+      else if (i == 8) console.group("Group Demo");
+      else if (i == 9) console.groupEnd();
+      else if (i == 10)console.table(["apples", "oranges", "bananas"]);
+      else if (i == 11)console.time("Timer Demo");
+      else if (i == 12)console.timeEnd("Timer Demo");
+      else if (i == 13)console.trace();
+    }
+
+    function tryCatchDemo() {
+      try {
+        let para = document.getElementById("get-me");
+        if (para == undefined) 
+          throw new ErrorDemo("Tag was not found!");
+        
+        console.log(para.innerHTML);
+      }
+      catch (err) {
+        console.error(err);
+      }
+      finally {
+        let newPara = document.createAttribute("p");
+      }
+    }
   </script>
 </body>
 
